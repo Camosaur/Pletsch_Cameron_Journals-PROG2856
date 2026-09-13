@@ -16,22 +16,25 @@ public class SquareSpawner : MonoBehaviour
         drawSquare(mousePos, sideSize, Color.yellow, 0);
 
         //Change the size when you scroll the mouse wheel
-        if (Mouse.current.scroll.ReadValue() != Vector2.zero) {
+        if (Mouse.current.scroll.ReadValue() != Vector2.zero)
+        {
 
             sideSize += Mouse.current.scroll.ReadValue().y / 2;
 
         }
 
         //When clicked, draw a white square
-        if (Mouse.current.leftButton.wasPressedThisFrame) {
+        if (Mouse.current.leftButton.wasPressedThisFrame)
+        {
             drawSquare(mousePos, sideSize, Color.white, 99999999);
         }
 
     }
 
-    void drawSquare(Vector2 midPoint, float sideSize, Color color, float timeStay) {
+    void drawSquare(Vector2 midPoint, float sideSize, Color color, float timeStay)
+    {
 
-        float halfSide = sideSize/2;
+        float halfSide = sideSize / 2;
 
         //Find the corners
         Vector2 topLeft = new Vector2(midPoint.x - halfSide, midPoint.y + halfSide);

@@ -18,9 +18,10 @@ public class RowGeneration : MonoBehaviour
         Vector2 midPoint = Vector2.zero;
 
         Vector2 posChange = new Vector2(1, 0);
-        if(squares < 0) { 
+        if (squares < 0)
+        {
             //If I get a negtive input, reverse the direction it's going
-            
+
             posChange *= -1;
 
             //...And make the input positive
