@@ -6,9 +6,6 @@ public class Pipeline : MonoBehaviour
 {
     Coroutine drawing;
 
-    public float totalMag = 0;
-    public Vector2 mousePos;
-
 
     void Update()
     {
@@ -21,7 +18,8 @@ public class Pipeline : MonoBehaviour
 
     IEnumerator DrawAndCalculate() {
         //Initialize a "TotalMag" float variable
-
+        float totalMag = 0;
+        Vector2 mousePos;
 
         //While true loop...
         while (true)
