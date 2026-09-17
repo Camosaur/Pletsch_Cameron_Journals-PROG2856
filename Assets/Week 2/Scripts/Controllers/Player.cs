@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
 
 public class Player : MonoBehaviour
 {
@@ -12,6 +13,8 @@ public class Player : MonoBehaviour
 
     public int numberOfTrailBombs;
     public int bombTrailSpacing;
+
+    public float cornerBombDist;
     
 
     void Start()
@@ -25,8 +28,8 @@ public class Player : MonoBehaviour
     private void Update()
     {
         //Test Task 2
-        if (Keyboard.current.cKey.wasPressedThisFrame) { 
-            
+        if (Keyboard.current.cKey.wasPressedThisFrame) {
+            SpawnBombOnRandomCorner(cornerBombDist);
         }
     }
 
@@ -80,12 +83,26 @@ public class Player : MonoBehaviour
         Instantiate(bombPrefab, transform.position + inOffset, Quaternion.identity);
     }
 
-    public void SpawnBombOnRandomCorner(float inDistance) { 
-    
+    public void SpawnBombOnRandomCorner(float inDistance) {
+
         //Choose a random corner by adding Transform.up * +-1 + Transform.right * +-1 and then normalizing it
+        Vector2 direction = Vector2.zero;
+
+        //If it's magnitude is 1 or 0, it isn't in a corner and the operation must be redone
+        
+        Vector2 topBottom = (Random.Range(0, 2)-1) * transform.up;
+
+        Vector2 leftright = (Random.Range(0, 2)-1) * transform.right;
+
+        direction = topBottom + leftright;
+        
+        //I normalize it after the check
+        direction = fakeNormalize(direction);
+
 
         //Call SpawnBombAtOffset at that vector * inDistance
-    
+        SpawnBombAtOffset(direction * inDistance);
+
     }
 
 
