@@ -18,6 +18,8 @@ public class Player : MonoBehaviour
 
     public Transform targetPos;
     public float warpRatio;
+
+    public float radarRange = 5;
     
 
     void Start()
@@ -31,8 +33,11 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-
+        //Test Task 3
         WarpPlayer(targetPos, warpRatio);
+
+        //Test Task 4
+        DetectAsteroids(radarRange, asteroidTransforms);
 
         //Test Task 2
         if (Keyboard.current.cKey.wasPressedThisFrame) {
@@ -137,5 +142,27 @@ public class Player : MonoBehaviour
         //Set the position of the player to a point in between it and the enemy, determined by a ratio.
         transform.position = Vector3.Lerp(target.position + target.up*3, target.position, ratio);
 
+    }
+
+    public void DetectAsteroids(float inMaxRange, List<Transform> inAsteroids) {
+
+        Vector2 radarLine = new Vector2();
+
+        //Loop through each asteroid
+        foreach (Transform asteroid in inAsteroids) {
+            //Check the distance- skip this iteration if the asteroid is not within range
+            if (Vector2.Distance(asteroid.position, transform.position) > inMaxRange) continue;
+
+            //Subtract the player's position from the asteroid's positon to get the vector from the player's position to that asteroid's position
+            radarLine = asteroid.position - transform.position;
+
+            //Normalize the vector, then multiply it by 2.5
+            radarLine = fakeNormalize(radarLine) * 2.5f;
+
+            //Draw the line from the player's position to the new vector + the player's positon
+            Debug.DrawLine(transform.position, (Vector2)transform.position + radarLine);
+
+        }
+    
     }
 }
