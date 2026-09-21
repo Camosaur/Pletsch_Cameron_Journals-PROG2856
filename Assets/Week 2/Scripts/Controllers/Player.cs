@@ -88,15 +88,12 @@ public class Player : MonoBehaviour
         //Choose a random corner by adding Transform.up * +-1 + Transform.right * +-1 and then normalizing it
         Vector2 direction = Vector2.zero;
 
-        //If it's magnitude is 1 or 0, it isn't in a corner and the operation must be redone
-        
-        Vector2 topBottom = (Random.Range(0, 2)-1) * transform.up;
+        //Randomize both axes
+        Vector2 topBottom = randomSign() * transform.up;
+        Vector2 leftright = randomSign() * transform.right;
 
-        Vector2 leftright = (Random.Range(0, 2)-1) * transform.right;
-
+        //Add and normalize the vector to get a corner
         direction = topBottom + leftright;
-        
-        //I normalize it after the check
         direction = fakeNormalize(direction);
 
 
@@ -110,6 +107,22 @@ public class Player : MonoBehaviour
     Vector2 fakeNormalize(Vector2 v) {
 
         return new Vector2((v.x / Mathf.Abs(v.magnitude)), (v.y / Mathf.Abs(v.magnitude)));
+    }
+
+    int randomSign() {
+
+        //Choose either 0 or 1
+        int choice = Random.Range(0, 2);
+
+        //If it's 0, make it -1 instead
+        if (choice == 0)
+        {
+            choice = -1;
+        }
+
+        //Return 1 or -1
+        return choice;
+    
     }
 
 }
