@@ -15,18 +15,25 @@ public class Player : MonoBehaviour
     public int bombTrailSpacing;
 
     public float cornerBombDist;
+
+    public Transform targetPos;
+    public float warpRatio;
     
 
     void Start()
     {
-       //Start the coroutine that manages input handling and cooldowns
+       //Start the coroutine that manages input handling and cooldowns for bomb placement
        StartCoroutine(verbWithCooldown(3));
-
+        
+       
         
     }
 
     private void Update()
     {
+
+        WarpPlayer(targetPos, warpRatio);
+
         //Test Task 2
         if (Keyboard.current.cKey.wasPressedThisFrame) {
             SpawnBombOnRandomCorner(cornerBombDist);
@@ -125,4 +132,10 @@ public class Player : MonoBehaviour
     
     }
 
+    public void WarpPlayer(Transform target, float ratio) {
+
+        //Set the position of the player to a point in between it and the enemy, determined by a ratio.
+        transform.position = Vector3.Lerp(target.position + target.up*3, target.position, ratio);
+
+    }
 }
