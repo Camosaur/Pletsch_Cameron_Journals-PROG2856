@@ -140,7 +140,7 @@ public class Player : MonoBehaviour
     public void WarpPlayer(Transform target, float ratio) {
 
         //Set the position of the player to a point in between it and the enemy, determined by a ratio.
-        transform.position = Vector3.Lerp(target.position + target.up*3, target.position, ratio);
+        transform.position = Vector3.Lerp((Vector2)target.position + Vector2.up*3, target.position, ratio);
 
     }
 
