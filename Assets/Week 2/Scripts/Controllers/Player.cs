@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -20,6 +21,8 @@ public class Player : MonoBehaviour
     public float warpRatio;
 
     public float radarRange = 5;
+
+    public float unitsPerSec = 1;
     
 
     void Start()
@@ -33,18 +36,23 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        //Test Task 3
-        WarpPlayer(targetPos, warpRatio);
+        //Test Week2 Task 3
+        //WarpPlayer(targetPos, warpRatio);
 
-        //Test Task 4
+        //Test Week2 Task 4
         DetectAsteroids(radarRange, asteroidTransforms);
 
-        //Test Task 2
+        //Test Week2 Task 2
         if (Keyboard.current.cKey.wasPressedThisFrame) {
             SpawnBombOnRandomCorner(cornerBombDist);
         }
+
+        //Move the player with arrow key input
+        PlayerMovement();
+
     }
 
+    #region Week2
     IEnumerator verbWithCooldown(int cooldownTime)
     {
         while (true)
@@ -124,7 +132,7 @@ public class Player : MonoBehaviour
     int randomSign() {
 
         //Choose either 0 or 1
-        int choice = Random.Range(0, 2);
+        int choice = UnityEngine.Random.Range(0, 2);
 
         //If it's 0, make it -1 instead
         if (choice == 0)
@@ -165,4 +173,48 @@ public class Player : MonoBehaviour
         }
     
     }
+
+    #endregion
+
+    public void PlayerMovement() {
+  
+            //Make a vector to represent the movement this frame
+            Vector2 movement = Vector2.zero;
+
+            //LEFT
+            if (Keyboard.current.leftArrowKey.isPressed)
+            {
+                //Move the player this frame
+                movement += Vector2.left;
+            }
+
+            //RIGHT
+            if (Keyboard.current.rightArrowKey.isPressed)
+            {
+                //Move the player this frame
+                movement += Vector2.right;
+            }
+
+            //UP
+            if (Keyboard.current.upArrowKey.isPressed)
+            {
+                //Move the player this frame
+                movement += Vector2.up;
+            }
+
+            //DOWN
+            if (Keyboard.current.downArrowKey.isPressed)
+            {
+                //Move the player this frame
+                movement += Vector2.down;
+            }
+
+            //Normalize the movment and find its magnitude this frame
+            movement = Vector2.Normalize(movement) * unitsPerSec * Time.deltaTime;
+
+            //Add the movement to the position
+            transform.position += (Vector3)movement;
+
+    }
+   
 }
