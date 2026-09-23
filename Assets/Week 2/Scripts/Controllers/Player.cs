@@ -22,7 +22,22 @@ public class Player : MonoBehaviour
 
     public float radarRange = 5;
 
-    public float unitsPerSec = 1;
+    //Velocity
+    private float unitsPerSec = 0;
+
+    //Max Speed
+    public float maxUnitsPerSec = 5;
+
+    //Time since input pressed
+    private float accelationTime;
+
+    //Time to get to max speed
+    public float maxAccelerationTime = 0;
+
+    //
+    public Vector2 velocity = Vector2.zero;
+
+    public float speed;
     
 
     void Start()
@@ -36,6 +51,8 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
+
+
         //Test Week2 Task 3
         //WarpPlayer(targetPos, warpRatio);
 
@@ -49,6 +66,9 @@ public class Player : MonoBehaviour
 
         //Move the player with arrow key input
         PlayerMovement();
+
+        //Check speed
+        speed = velocity.magnitude;
 
     }
 
@@ -179,41 +199,77 @@ public class Player : MonoBehaviour
     public void PlayerMovement() {
   
             //Make a vector to represent the movement this frame
-            Vector2 movement = Vector2.zero;
+            Vector2 accel = Vector2.zero;
+
+        //Has the player pressed an input?
+        bool playerMoved = false;
 
             //LEFT
             if (Keyboard.current.leftArrowKey.isPressed)
             {
-                //Move the player this frame
-                movement += Vector2.left;
+                //Direction
+                accel += Vector2.left;
+
+                //Player has pressed input
+                playerMoved = true;
+
             }
 
             //RIGHT
             if (Keyboard.current.rightArrowKey.isPressed)
             {
-                //Move the player this frame
-                movement += Vector2.right;
+                //Direction
+                accel += Vector2.right;
+
+                //Player has pressed input
+                playerMoved = true; 
             }
 
             //UP
             if (Keyboard.current.upArrowKey.isPressed)
             {
-                //Move the player this frame
-                movement += Vector2.up;
+                //Direction
+                accel += Vector2.up;
+
+                //Player has pressed input
+                playerMoved = true;
             }
 
             //DOWN
             if (Keyboard.current.downArrowKey.isPressed)
             {
-                //Move the player this frame
-                movement += Vector2.down;
+                //Direction
+                accel += Vector2.down;
+
+                //Player has pressed input
+                playerMoved = true;
+
+
             }
 
-            //Normalize the movment and find its magnitude this frame
-            movement = Vector2.Normalize(movement) * unitsPerSec * Time.deltaTime;
 
-            //Add the movement to the position
-            transform.position += (Vector3)movement;
+
+        //Check if the player moved and the speed is within it's intended parameters. Only change velocity if so it needs to change.
+        if (playerMoved && speed <= maxUnitsPerSec)
+        {
+            //Normalize the acceleration input and find its magnitude this frame
+            accel = Vector2.Normalize(accel) * (maxUnitsPerSec / maxAccelerationTime) * Time.deltaTime;
+        }
+        else if(!playerMoved && speed >= 0.01) {
+
+            //Decelerate if the player did not move
+            accel = (velocity*-1) * (maxUnitsPerSec / maxAccelerationTime) * Time.deltaTime;
+        }
+
+        //Change in velocity
+        velocity += accel;
+
+        //Make sure the velocity is clamped
+        velocity = Vector2.ClampMagnitude(velocity, maxUnitsPerSec);
+      
+
+        //Add the velocity to the position
+        transform.position += (Vector3)velocity * Time.deltaTime;
 
     }
    
