@@ -23,6 +23,14 @@ public class Player : MonoBehaviour
     public float radarRange = 5;
 
     public float unitsPerSec = 1;
+
+    public float maxSpeed = 5;
+
+    public float timeTillMaxSpeed = 1;
+
+    public float decelerationTime = 1;
+
+    private Vector2 directionSave = Vector2.zero;
     
 
     void Start()
@@ -177,43 +185,105 @@ public class Player : MonoBehaviour
     #endregion
 
     public void PlayerMovement() {
-  
-            //Make a vector to represent the movement this frame
-            Vector2 movement = Vector2.zero;
+        
+        //Get the acceleration
+        float acceleration = maxSpeed / timeTillMaxSpeed;
 
-            //LEFT
-            if (Keyboard.current.leftArrowKey.isPressed)
+        //get the deceleration
+        float deceleration = maxSpeed / decelerationTime;
+
+        if (getInputAndMove())
+        {
+            //If the player should be accelerating, and they are below max velocity
+            if (unitsPerSec < maxSpeed)
             {
-                //Move the player this frame
-                movement += Vector2.left;
-            }
 
-            //RIGHT
-            if (Keyboard.current.rightArrowKey.isPressed)
+                unitsPerSec += acceleration * Time.deltaTime;
+
+            }
+            else
             {
-                //Move the player this frame
-                movement += Vector2.right;
+                unitsPerSec = maxSpeed;
             }
-
-            //UP
-            if (Keyboard.current.upArrowKey.isPressed)
+        }
+        else
+        {
+            //If the player should be decelerating, and they are above a cutoff velocity
+            if (unitsPerSec > 0.1f)
             {
-                //Move the player this frame
-                movement += Vector2.up;
+                unitsPerSec -= deceleration * Time.deltaTime;
             }
-
-            //DOWN
-            if (Keyboard.current.downArrowKey.isPressed)
+            else
             {
-                //Move the player this frame
-                movement += Vector2.down;
+                unitsPerSec = 0;
             }
+        }
 
-            //Normalize the movment and find its magnitude this frame
-            movement = Vector2.Normalize(movement) * unitsPerSec * Time.deltaTime;
+    }
 
-            //Add the movement to the position
-            transform.position += (Vector3)movement;
+    private bool getInputAndMove() {
+
+        //Make a vector to represent the movement this frame
+        Vector2 movement = Vector2.zero;
+
+        //Make a boolean to represent weather the player gave input this frame
+        bool hasInputed = false;
+
+        //LEFT
+        if (Keyboard.current.leftArrowKey.isPressed)
+        {
+            //Move the player this frame
+            movement += Vector2.left;
+
+            //Change the bool
+            hasInputed = true;
+        }
+
+        //RIGHT
+        if (Keyboard.current.rightArrowKey.isPressed)
+        {
+            //Move the player this frame
+            movement += Vector2.right;
+
+            //Change the bool
+            hasInputed = true;
+        }
+
+        //UP
+        if (Keyboard.current.upArrowKey.isPressed)
+        {
+            //Move the player this frame
+            movement += Vector2.up;
+
+            //Change the bool
+            hasInputed = true;
+        }
+
+        //DOWN
+        if (Keyboard.current.downArrowKey.isPressed)
+        {
+            //Move the player this frame
+            movement += Vector2.down;
+
+            //Change the bool
+            hasInputed = true;
+        }
+
+
+        //If you have gotten input, overite the direction
+        if (hasInputed)
+        {
+            directionSave = movement;
+        }
+
+        //Normalize the movment and find its magnitude this frame
+        directionSave = Vector2.Normalize(directionSave) * unitsPerSec * Time.deltaTime;
+
+        //Add the movement to the position
+        transform.position += (Vector3)directionSave;
+
+        //Indicate whether the player has given input this frame
+        return hasInputed;
 
     }
    
