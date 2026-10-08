@@ -31,14 +31,20 @@ public class Player : MonoBehaviour
     public float decelerationTime = 1;
 
     private Vector2 directionSave = Vector2.zero;
+
+    public int circlePoints = 5;
+
+    public float radius = 1;
     
 
     void Start()
     {
        //Start the coroutine that manages input handling and cooldowns for bomb placement
        StartCoroutine(verbWithCooldown(3));
+
+        //Call enemyRadar
+        enemyRadar(radius, circlePoints);
         
-       
         
     }
 
@@ -184,6 +190,7 @@ public class Player : MonoBehaviour
 
     #endregion
 
+    #region Movement
     public void PlayerMovement() {
         
         //Get the acceleration
@@ -286,5 +293,69 @@ public class Player : MonoBehaviour
         return hasInputed;
 
     }
-   
+
+    #endregion
+
+    public void enemyRadar(float radius, int circlePoints) { 
+    
+        StartCoroutine(enemyRadarRuntime(radius, circlePoints));
+    }
+
+    IEnumerator enemyRadarRuntime(float radius, int circlePoints) {
+
+        //Declare the local variables I will need
+        Color shieldColor = Color.red;
+        List<float> angleList = new List<float>();
+        List<Vector2> pointList = new List<Vector2>();
+        float angleStep;
+
+        //Calc the list of angles
+        angleStep = 360 / circlePoints;
+
+        for (int i = 0; i < circlePoints; i++)
+        {
+            angleList.Add(angleStep * i);
+        }
+
+
+        //Calc the list of points
+        foreach (float angle in angleList)
+        {
+            pointList.Add(new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad)) * radius);
+        }
+
+        //Start the infinte cycle
+        while (true)
+        {
+            //-Determine the color of the shield
+            if (Vector2.Distance(enemyTransform.position, transform.position) >= radius) { 
+                shieldColor = Color.red;
+            }
+            else
+            {
+                shieldColor = Color.green;
+            }
+
+            //-Draw the lines
+            for (int index = 1; index < pointList.Count; index++)
+            {
+
+                //Set start position equal to the star before this one
+                Vector2 startPosition = pointList[index - 1] + (Vector2)transform.position;
+
+                //Set end position equal to this star
+                Vector2 endPosition = pointList[index] + (Vector2)transform.position;
+
+                //Draw the line
+                Debug.DrawLine(startPosition,endPosition, shieldColor);
+            }
+            
+            Debug.DrawLine(pointList[0] + (Vector2)transform.position, pointList[pointList.Count - 1] + (Vector2)transform.position, shieldColor);
+
+            //-Wait
+            yield return null;
+        }
+    
+    }
+
 }
