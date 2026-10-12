@@ -42,7 +42,7 @@ public class Player : MonoBehaviour
     void Start()
     {
        //Start the coroutine that manages input handling and cooldowns for bomb placement
-       StartCoroutine(verbWithCooldown(3));
+       //StartCoroutine(verbWithCooldown(3));
 
     }
 
