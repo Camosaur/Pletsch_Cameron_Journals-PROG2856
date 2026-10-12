@@ -35,6 +35,8 @@ public class Player : MonoBehaviour
     public int circlePoints = 5;
 
     public float radius = 1;
+
+    public GameObject powerUpPrefab;
     
 
     void Start()
@@ -44,8 +46,10 @@ public class Player : MonoBehaviour
 
         //Call enemyRadar
         enemyRadar(radius, circlePoints);
-        
-        
+
+        //Call enemyRadar
+        SpawnPowerups(radius, circlePoints);
+
     }
 
     private void Update()
@@ -358,4 +362,33 @@ public class Player : MonoBehaviour
     
     }
 
+    public void SpawnPowerups(float radius, int numberOfPowerups)
+    {
+        //Declare the local variables I will need
+        List<float> angleList = new List<float>();
+        List<Vector2> pointList = new List<Vector2>();
+        float angleStep;
+
+        //Calc the list of angles
+        angleStep = 360 / circlePoints;
+
+        for (int i = 0; i < circlePoints; i++)
+        {
+            angleList.Add(angleStep * i);
+        }
+
+
+        //Calc the list of points
+        foreach (float angle in angleList)
+        {
+            pointList.Add(new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad)) * radius);
+        }
+
+        //Instantiate a powerUp at each point on the list
+        foreach (Vector2 point in pointList) {
+
+            Instantiate(powerUpPrefab, point + (Vector2)transform.position, Quaternion.identity);
+        
+        }
+    }
 }
