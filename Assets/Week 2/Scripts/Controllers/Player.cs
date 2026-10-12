@@ -30,7 +30,7 @@ public class Player : MonoBehaviour
 
     public float decelerationTime = 1;
 
-    private Vector2 directionSave = Vector2.zero;
+    public Vector2 directionSave = Vector2.zero;
 
     public int circlePoints = 5;
 
@@ -292,6 +292,12 @@ public class Player : MonoBehaviour
 
         //Add the movement to the position
         transform.position += (Vector3)directionSave;
+
+        //Rotate given the last direction of movement
+        if (directionSave.normalized != Vector2.zero) {
+            transform.up = (Vector3)directionSave.normalized;
+        }
+        
 
         //Indicate whether the player has given input this frame
         return hasInputed;

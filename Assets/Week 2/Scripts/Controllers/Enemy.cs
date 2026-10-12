@@ -75,6 +75,12 @@ public class Enemy : MonoBehaviour
         //Normalize the movment and find its magnitude this frame
         direction = Vector2.Normalize(direction) * unitsPerSec * Time.deltaTime;
 
+        //Rotate given the last direction of movement
+        if (direction.normalized != Vector2.zero)
+        {
+            transform.up = (Vector3)direction.normalized;
+        }
+
         //Add the movement to the position
         transform.position += (Vector3)direction;
 
