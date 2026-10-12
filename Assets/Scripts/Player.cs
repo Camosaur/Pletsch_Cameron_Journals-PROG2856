@@ -44,26 +44,10 @@ public class Player : MonoBehaviour
        //Start the coroutine that manages input handling and cooldowns for bomb placement
        StartCoroutine(verbWithCooldown(3));
 
-        //Call enemyRadar
-        enemyRadar(radius, circlePoints);
-
-        //Call enemyRadar
-        SpawnPowerups(radius, circlePoints);
-
     }
 
     private void Update()
     {
-        //Test Week2 Task 3
-        //WarpPlayer(targetPos, warpRatio);
-
-        //Test Week2 Task 4
-        DetectAsteroids(radarRange, asteroidTransforms);
-
-        //Test Week2 Task 2
-        if (Keyboard.current.cKey.wasPressedThisFrame) {
-            SpawnBombOnRandomCorner(cornerBombDist);
-        }
 
         //Move the player with arrow key input
         PlayerMovement();
@@ -121,76 +105,77 @@ public class Player : MonoBehaviour
         Instantiate(bombPrefab, transform.position + inOffset, Quaternion.identity);
     }
 
-    public void SpawnBombOnRandomCorner(float inDistance) {
+    //public void SpawnBombOnRandomCorner(float inDistance) {
 
-        //Choose a random corner by adding Transform.up * +-1 + Transform.right * +-1 and then normalizing it
-        Vector2 direction = Vector2.zero;
+    //    //Choose a random corner by adding Transform.up * +-1 + Transform.right * +-1 and then normalizing it
+    //    Vector2 direction = Vector2.zero;
 
-        //Randomize both axes
-        Vector2 topBottom = randomSign() * transform.up;
-        Vector2 leftright = randomSign() * transform.right;
+    //    //Randomize both axes
+    //    Vector2 topBottom = randomSign() * transform.up;
+    //    Vector2 leftright = randomSign() * transform.right;
 
-        //Add and normalize the vector to get a corner
-        direction = topBottom + leftright;
-        direction = fakeNormalize(direction);
+    //    //Add and normalize the vector to get a corner
+    //    direction = topBottom + leftright;
+    //    direction = fakeNormalize(direction);
 
 
-        //Call SpawnBombAtOffset at that vector * inDistance
-        SpawnBombAtOffset(direction * inDistance);
+    //    //Call SpawnBombAtOffset at that vector * inDistance
+    //    SpawnBombAtOffset(direction * inDistance);
 
-    }
+    //}
 
 
     //In class
-    Vector2 fakeNormalize(Vector2 v) {
+    Vector2 fakeNormalize(Vector2 v)
+    {
 
         return new Vector2((v.x / Mathf.Abs(v.magnitude)), (v.y / Mathf.Abs(v.magnitude)));
     }
 
-    int randomSign() {
+    //int randomSign() {
 
-        //Choose either 0 or 1
-        int choice = UnityEngine.Random.Range(0, 2);
+    //    //Choose either 0 or 1
+    //    int choice = UnityEngine.Random.Range(0, 2);
 
-        //If it's 0, make it -1 instead
-        if (choice == 0)
-        {
-            choice = -1;
-        }
+    //    //If it's 0, make it -1 instead
+    //    if (choice == 0)
+    //    {
+    //        choice = -1;
+    //    }
 
-        //Return 1 or -1
-        return choice;
-    
-    }
+    //    //Return 1 or -1
+    //    return choice;
 
-    public void WarpPlayer(Transform target, float ratio) {
+    //}
 
-        //Set the position of the player to a point in between it and the enemy, determined by a ratio.
-        transform.position = Vector3.Lerp((Vector2)target.position + Vector2.up*3, target.position, ratio);
+    //public void WarpPlayer(Transform target, float ratio) {
 
-    }
+    //    //Set the position of the player to a point in between it and the enemy, determined by a ratio.
+    //    transform.position = Vector3.Lerp((Vector2)target.position + Vector2.up*3, target.position, ratio);
 
-    public void DetectAsteroids(float inMaxRange, List<Transform> inAsteroids) {
+    //}
 
-        Vector2 radarLine = new Vector2();
+    //public void DetectAsteroids(float inMaxRange, List<Transform> inAsteroids) {
 
-        //Loop through each asteroid
-        foreach (Transform asteroid in inAsteroids) {
-            //Check the distance- skip this iteration if the asteroid is not within range
-            if (Vector2.Distance(asteroid.position, transform.position) > inMaxRange) continue;
+    //    Vector2 radarLine = new Vector2();
 
-            //Subtract the player's position from the asteroid's positon to get the vector from the player's position to that asteroid's position
-            radarLine = asteroid.position - transform.position;
+    //    //Loop through each asteroid
+    //    foreach (Transform asteroid in inAsteroids) {
+    //        //Check the distance- skip this iteration if the asteroid is not within range
+    //        if (Vector2.Distance(asteroid.position, transform.position) > inMaxRange) continue;
 
-            //Normalize the vector, then multiply it by 2.5
-            radarLine = fakeNormalize(radarLine) * 2.5f;
+    //        //Subtract the player's position from the asteroid's positon to get the vector from the player's position to that asteroid's position
+    //        radarLine = asteroid.position - transform.position;
 
-            //Draw the line from the player's position to the new vector + the player's positon
-            Debug.DrawLine(transform.position, (Vector2)transform.position + radarLine);
+    //        //Normalize the vector, then multiply it by 2.5
+    //        radarLine = fakeNormalize(radarLine) * 2.5f;
 
-        }
-    
-    }
+    //        //Draw the line from the player's position to the new vector + the player's positon
+    //        Debug.DrawLine(transform.position, (Vector2)transform.position + radarLine);
+
+    //    }
+
+    //}
 
     #endregion
 
@@ -306,95 +291,98 @@ public class Player : MonoBehaviour
 
     #endregion
 
-    public void enemyRadar(float radius, int circlePoints) { 
-    
-        StartCoroutine(enemyRadarRuntime(radius, circlePoints));
-    }
+    #region commentedOut
+    //public void enemyRadar(float radius, int circlePoints) { 
 
-    IEnumerator enemyRadarRuntime(float radius, int circlePoints) {
+    //    StartCoroutine(enemyRadarRuntime(radius, circlePoints));
+    //}
 
-        //Declare the local variables I will need
-        Color shieldColor = Color.red;
-        List<float> angleList = new List<float>();
-        List<Vector2> pointList = new List<Vector2>();
-        float angleStep;
+    //IEnumerator enemyRadarRuntime(float radius, int circlePoints) {
 
-        //Calc the list of angles
-        angleStep = 360 / circlePoints;
+    //    //Declare the local variables I will need
+    //    Color shieldColor = Color.red;
+    //    List<float> angleList = new List<float>();
+    //    List<Vector2> pointList = new List<Vector2>();
+    //    float angleStep;
 
-        for (int i = 0; i < circlePoints; i++)
-        {
-            angleList.Add(angleStep * i);
-        }
+    //    //Calc the list of angles
+    //    angleStep = 360 / circlePoints;
 
-
-        //Calc the list of points
-        foreach (float angle in angleList)
-        {
-            pointList.Add(new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad)) * radius);
-        }
-
-        //Start the infinte cycle
-        while (true)
-        {
-            //-Determine the color of the shield
-            if (Vector2.Distance(enemyTransform.position, transform.position) >= radius) { 
-                shieldColor = Color.red;
-            }
-            else
-            {
-                shieldColor = Color.green;
-            }
-
-            //-Draw the lines
-            for (int index = 1; index < pointList.Count; index++)
-            {
-
-                //Set start position equal to the star before this one
-                Vector2 startPosition = pointList[index - 1] + (Vector2)transform.position;
-
-                //Set end position equal to this star
-                Vector2 endPosition = pointList[index] + (Vector2)transform.position;
-
-                //Draw the line
-                Debug.DrawLine(startPosition,endPosition, shieldColor);
-            }
-            
-            Debug.DrawLine(pointList[0] + (Vector2)transform.position, pointList[pointList.Count - 1] + (Vector2)transform.position, shieldColor);
-
-            //-Wait
-            yield return null;
-        }
-    
-    }
-
-    public void SpawnPowerups(float radius, int numberOfPowerups)
-    {
-        //Declare the local variables I will need
-        List<float> angleList = new List<float>();
-        List<Vector2> pointList = new List<Vector2>();
-        float angleStep;
-
-        //Calc the list of angles
-        angleStep = 360 / circlePoints;
-
-        for (int i = 0; i < circlePoints; i++)
-        {
-            angleList.Add(angleStep * i);
-        }
+    //    for (int i = 0; i < circlePoints; i++)
+    //    {
+    //        angleList.Add(angleStep * i);
+    //    }
 
 
-        //Calc the list of points
-        foreach (float angle in angleList)
-        {
-            pointList.Add(new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad)) * radius);
-        }
+    //    //Calc the list of points
+    //    foreach (float angle in angleList)
+    //    {
+    //        pointList.Add(new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad)) * radius);
+    //    }
 
-        //Instantiate a powerUp at each point on the list
-        foreach (Vector2 point in pointList) {
+    //    //Start the infinte cycle
+    //    while (true)
+    //    {
+    //        //-Determine the color of the shield
+    //        if (Vector2.Distance(enemyTransform.position, transform.position) >= radius) { 
+    //            shieldColor = Color.red;
+    //        }
+    //        else
+    //        {
+    //            shieldColor = Color.green;
+    //        }
 
-            Instantiate(powerUpPrefab, point + (Vector2)transform.position, Quaternion.identity);
-        
-        }
-    }
+    //        //-Draw the lines
+    //        for (int index = 1; index < pointList.Count; index++)
+    //        {
+
+    //            //Set start position equal to the star before this one
+    //            Vector2 startPosition = pointList[index - 1] + (Vector2)transform.position;
+
+    //            //Set end position equal to this star
+    //            Vector2 endPosition = pointList[index] + (Vector2)transform.position;
+
+    //            //Draw the line
+    //            Debug.DrawLine(startPosition,endPosition, shieldColor);
+    //        }
+
+    //        Debug.DrawLine(pointList[0] + (Vector2)transform.position, pointList[pointList.Count - 1] + (Vector2)transform.position, shieldColor);
+
+    //        //-Wait
+    //        yield return null;
+    //    }
+
+    //}
+
+    //public void SpawnPowerups(float radius, int numberOfPowerups)
+    //{
+    //    //Declare the local variables I will need
+    //    List<float> angleList = new List<float>();
+    //    List<Vector2> pointList = new List<Vector2>();
+    //    float angleStep;
+
+    //    //Calc the list of angles
+    //    angleStep = 360 / circlePoints;
+
+    //    for (int i = 0; i < circlePoints; i++)
+    //    {
+    //        angleList.Add(angleStep * i);
+    //    }
+
+
+    //    //Calc the list of points
+    //    foreach (float angle in angleList)
+    //    {
+    //        pointList.Add(new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad)) * radius);
+    //    }
+
+    //    //Instantiate a powerUp at each point on the list
+    //    foreach (Vector2 point in pointList) {
+
+    //        Instantiate(powerUpPrefab, point + (Vector2)transform.position, Quaternion.identity);
+
+    //    }
+    //}
+    #endregion
+
 }
