@@ -19,6 +19,8 @@ public class Enemy : MonoBehaviour
 
     public Transform target;
 
+    bool isBouncing = false;
+
     public void Start()
     {
         StartCoroutine(EnemyMovementCycle());
@@ -72,6 +74,14 @@ public class Enemy : MonoBehaviour
 
     private void Move()
     {
+        //Check if this ship should bounce. If so, start the bounce coroutine
+        if (Vector2.Distance(transform.position, target.position) < 1)
+        {
+
+            StartCoroutine(bounce());
+
+        }
+
         //Normalize the movment and find its magnitude this frame
         direction = Vector2.Normalize(direction) * unitsPerSec * Time.deltaTime;
 
@@ -91,6 +101,11 @@ public class Enemy : MonoBehaviour
         //Go on forever
         while (true) {
 
+            //Wait until you are not bouncing
+            while (isBouncing) {
+                yield return null;
+            }
+
             //Set isThrusting to true
             isThrusting = true;
 
@@ -109,6 +124,18 @@ public class Enemy : MonoBehaviour
 
         }
     
+    }
+
+    public IEnumerator bounce()
+    {
+        //Set variables for a bouncing state
+        isBouncing = true;
+        isThrusting = false;
+        direction = Vector2.zero;
+
+        yield return new WaitForSeconds(2);
+
+        isBouncing = false;
     }
 
 }

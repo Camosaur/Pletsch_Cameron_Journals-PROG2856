@@ -15,13 +15,6 @@ public class Player : MonoBehaviour
     public int numberOfTrailBombs;
     public int bombTrailSpacing;
 
-    public float cornerBombDist;
-
-    public Transform targetPos;
-    public float warpRatio;
-
-    public float radarRange = 5;
-
     public float unitsPerSec = 1;
 
     public float maxSpeed = 5;
@@ -32,46 +25,46 @@ public class Player : MonoBehaviour
 
     public Vector2 directionSave = Vector2.zero;
 
-    public int circlePoints = 5;
-
-    public float radius = 1;
-
     public GameObject powerUpPrefab;
+
+    bool isBouncing = false;
     
 
     void Start()
     {
-       //Start the coroutine that manages input handling and cooldowns for bomb placement
-       //StartCoroutine(verbWithCooldown(3));
+        //Start the coroutine that manages input handling and cooldowns for bomb placement
+        //StartCoroutine(verbWithCooldown(3));
+
+        //Move the player with arrow key input
+        StartCoroutine(PlayerMovement());
 
     }
 
     private void Update()
     {
 
-        //Move the player with arrow key input
-        PlayerMovement();
+        
 
     }
 
     #region Week2
-    IEnumerator verbWithCooldown(int cooldownTime)
-    {
-        while (true)
-        {
-            //Wait until the player presses B
-            while (!Keyboard.current.bKey.wasPressedThisFrame)
-            {
-                yield return null;
-            }
+    //IEnumerator verbWithCooldown(int cooldownTime)
+    //{
+    //    while (true)
+    //    {
+    //        //Wait until the player presses B
+    //        while (!Keyboard.current.bKey.wasPressedThisFrame)
+    //        {
+    //            yield return null;
+    //        }
 
-            //Spawn the bombs
-            SpawnBombTrail(transform.up, bombTrailSpacing, numberOfTrailBombs);
+    //        //Spawn the bombs
+    //        SpawnBombTrail(transform.up, bombTrailSpacing, numberOfTrailBombs);
 
-            //Wait for some time- the cooldown!
-            yield return new WaitForSeconds(cooldownTime);
-        }
-    }
+    //        //Wait for some time- the cooldown!
+    //        yield return new WaitForSeconds(cooldownTime);
+    //    }
+    //}
 
     public void SpawnBombTrail(Vector3 inOffset, float inBombSpaceing, int inNumberOfBombs) {
         //Initialize the totalOffset
@@ -105,25 +98,6 @@ public class Player : MonoBehaviour
         Instantiate(bombPrefab, transform.position + inOffset, Quaternion.identity);
     }
 
-    //public void SpawnBombOnRandomCorner(float inDistance) {
-
-    //    //Choose a random corner by adding Transform.up * +-1 + Transform.right * +-1 and then normalizing it
-    //    Vector2 direction = Vector2.zero;
-
-    //    //Randomize both axes
-    //    Vector2 topBottom = randomSign() * transform.up;
-    //    Vector2 leftright = randomSign() * transform.right;
-
-    //    //Add and normalize the vector to get a corner
-    //    direction = topBottom + leftright;
-    //    direction = fakeNormalize(direction);
-
-
-    //    //Call SpawnBombAtOffset at that vector * inDistance
-    //    SpawnBombAtOffset(direction * inDistance);
-
-    //}
-
 
     //In class
     Vector2 fakeNormalize(Vector2 v)
@@ -132,87 +106,54 @@ public class Player : MonoBehaviour
         return new Vector2((v.x / Mathf.Abs(v.magnitude)), (v.y / Mathf.Abs(v.magnitude)));
     }
 
-    //int randomSign() {
-
-    //    //Choose either 0 or 1
-    //    int choice = UnityEngine.Random.Range(0, 2);
-
-    //    //If it's 0, make it -1 instead
-    //    if (choice == 0)
-    //    {
-    //        choice = -1;
-    //    }
-
-    //    //Return 1 or -1
-    //    return choice;
-
-    //}
-
-    //public void WarpPlayer(Transform target, float ratio) {
-
-    //    //Set the position of the player to a point in between it and the enemy, determined by a ratio.
-    //    transform.position = Vector3.Lerp((Vector2)target.position + Vector2.up*3, target.position, ratio);
-
-    //}
-
-    //public void DetectAsteroids(float inMaxRange, List<Transform> inAsteroids) {
-
-    //    Vector2 radarLine = new Vector2();
-
-    //    //Loop through each asteroid
-    //    foreach (Transform asteroid in inAsteroids) {
-    //        //Check the distance- skip this iteration if the asteroid is not within range
-    //        if (Vector2.Distance(asteroid.position, transform.position) > inMaxRange) continue;
-
-    //        //Subtract the player's position from the asteroid's positon to get the vector from the player's position to that asteroid's position
-    //        radarLine = asteroid.position - transform.position;
-
-    //        //Normalize the vector, then multiply it by 2.5
-    //        radarLine = fakeNormalize(radarLine) * 2.5f;
-
-    //        //Draw the line from the player's position to the new vector + the player's positon
-    //        Debug.DrawLine(transform.position, (Vector2)transform.position + radarLine);
-
-    //    }
-
-    //}
-
     #endregion
 
     #region Movement
-    public void PlayerMovement() {
-        
-        //Get the acceleration
-        float acceleration = maxSpeed / timeTillMaxSpeed;
-
-        //get the deceleration
-        float deceleration = maxSpeed / decelerationTime;
-
-        if (getInputAndMove())
+    public IEnumerator PlayerMovement() {
+        while (true)
         {
-            //If the player should be accelerating, and they are below max velocity
-            if (unitsPerSec < maxSpeed)
+            //Check if this ship should bounce. If so, start the bounce coroutine
+            if (Vector2.Distance(transform.position, enemyTransform.position) < 1) {
+                
+                StartCoroutine(bounce());
+
+            }
+
+
+            //Get the acceleration
+            float acceleration = maxSpeed / timeTillMaxSpeed;
+
+            //get the deceleration
+            float deceleration = maxSpeed / decelerationTime;
+
+            if (getInputAndMove())
             {
+                //If the player should be accelerating, and they are below max velocity
+                if (unitsPerSec < maxSpeed)
+                {
 
-                unitsPerSec += acceleration * Time.deltaTime;
+                    unitsPerSec += acceleration * Time.deltaTime;
 
+                }
+                else
+                {
+                    unitsPerSec = maxSpeed;
+                }
             }
             else
             {
-                unitsPerSec = maxSpeed;
+                //If the player should be decelerating, and they are above a cutoff velocity
+                if (unitsPerSec > 0.1f)
+                {
+                    unitsPerSec -= deceleration * Time.deltaTime;
+                }
+                else
+                {
+                    unitsPerSec = 0;
+                }
             }
-        }
-        else
-        {
-            //If the player should be decelerating, and they are above a cutoff velocity
-            if (unitsPerSec > 0.1f)
-            {
-                unitsPerSec -= deceleration * Time.deltaTime;
-            }
-            else
-            {
-                unitsPerSec = 0;
-            }
+
+            yield return null;
         }
 
     }
@@ -225,44 +166,49 @@ public class Player : MonoBehaviour
         //Make a boolean to represent weather the player gave input this frame
         bool hasInputed = false;
 
-        //LEFT
-        if (Keyboard.current.leftArrowKey.isPressed)
-        {
-            //Move the player this frame
-            movement += Vector2.left;
+        //Only take input if you are not bouncing
+        if (!isBouncing) {
 
-            //Change the bool
-            hasInputed = true;
-        }
+            //LEFT
+            if (Keyboard.current.leftArrowKey.isPressed)
+            {
+                //Move the player this frame
+                movement += Vector2.left;
 
-        //RIGHT
-        if (Keyboard.current.rightArrowKey.isPressed)
-        {
-            //Move the player this frame
-            movement += Vector2.right;
+                //Change the bool
+                hasInputed = true;
+            }
 
-            //Change the bool
-            hasInputed = true;
-        }
+            //RIGHT
+            if (Keyboard.current.rightArrowKey.isPressed)
+            {
+                //Move the player this frame
+                movement += Vector2.right;
 
-        //UP
-        if (Keyboard.current.upArrowKey.isPressed)
-        {
-            //Move the player this frame
-            movement += Vector2.up;
+                //Change the bool
+                hasInputed = true;
+            }
 
-            //Change the bool
-            hasInputed = true;
-        }
+            //UP
+            if (Keyboard.current.upArrowKey.isPressed)
+            {
+                //Move the player this frame
+                movement += Vector2.up;
 
-        //DOWN
-        if (Keyboard.current.downArrowKey.isPressed)
-        {
-            //Move the player this frame
-            movement += Vector2.down;
+                //Change the bool
+                hasInputed = true;
+            }
 
-            //Change the bool
-            hasInputed = true;
+            //DOWN
+            if (Keyboard.current.downArrowKey.isPressed)
+            {
+                //Move the player this frame
+                movement += Vector2.down;
+
+                //Change the bool
+                hasInputed = true;
+            }
+
         }
 
 
@@ -287,6 +233,15 @@ public class Player : MonoBehaviour
         //Indicate whether the player has given input this frame
         return hasInputed;
 
+    }
+
+    public IEnumerator bounce()
+    {
+        isBouncing = true;
+
+        yield return new WaitForSeconds(2);
+
+        isBouncing = false;
     }
 
     #endregion
