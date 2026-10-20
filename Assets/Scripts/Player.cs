@@ -29,6 +29,9 @@ public class Player : MonoBehaviour
 
     public float bounceforce = 10;
 
+    public SpriteRenderer crosshair;
+    public Transform crosshairT;
+
 
     void Start()
     {
@@ -40,6 +43,9 @@ public class Player : MonoBehaviour
 
         //Detect when a collision with the enemy starts
         StartCoroutine(onCollisionCheck());
+
+        //Functionality for aiming and fireing
+        StartCoroutine(aimInput());
 
     }
 
@@ -74,7 +80,7 @@ public class Player : MonoBehaviour
         Vector2 totalOffset = inOffset;
 
         //Initialize a direction variable by normalizing inOffset
-        Vector2 direction = fakeNormalize(inOffset);
+        Vector2 direction = inOffset.normalized;
 
 
         //Create a for loop that iterates NumberOfBombs times. 
@@ -99,14 +105,6 @@ public class Player : MonoBehaviour
          * */
 
         Instantiate(bombPrefab, transform.position + inOffset, Quaternion.identity);
-    }
-
-
-    //In class
-    Vector2 fakeNormalize(Vector2 v)
-    {
-
-        return new Vector2((v.x / Mathf.Abs(v.magnitude)), (v.y / Mathf.Abs(v.magnitude)));
     }
 
     #endregion
@@ -273,7 +271,7 @@ public class Player : MonoBehaviour
         //---CALCULATE DIRECTION OF THE FORCE
         
         //Find the direction from the enemy to use as the normal
-        Vector3 N = (transform.position - target.position).normalized;
+        Vector3 N = (transform.position - (target.position)).normalized;
         //Get the ship's current direction
         Vector3 D;
         if (direction.magnitude != 0)
@@ -335,6 +333,58 @@ public class Player : MonoBehaviour
             {
                 //This ship is not colliding
                 isColliding = false; 
+            }
+
+            yield return null;
+
+        }
+    }
+
+    IEnumerator aimInput()
+    {
+        //Start the crosshair hidden
+        crosshair.enabled = false;
+
+        //Save a local direction vector for the crosshair and bombs
+        Vector2 dir = Vector3.one;
+
+        while (true)
+        {
+
+            if (Mouse.current.rightButton.wasPressedThisFrame) { 
+                
+                //Show the crosshair
+                crosshair.enabled = true;
+
+                //Slow time
+                Time.timeScale = 0.5f;
+
+            }
+
+            if (Mouse.current.rightButton.isPressed)
+            {
+                //Find the dirction to the mouse from the player. Use the mouse position in world space. Save it as dir
+                dir = (Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue()) - transform.position ).normalized;
+
+                //Set the crosshairs rotation to dir 
+                crosshairT.up = dir;
+
+                //Using dir, find the crosshairs position on the unit circle 1 unit around the player and set that
+                float theta = Mathf.Atan2(dir.y, dir.x);
+                crosshairT.position = transform.position + new Vector3(Mathf.Cos(theta), Mathf.Sin(theta)) * 1;
+
+            }
+
+            if (Mouse.current.rightButton.wasReleasedThisFrame)
+            {
+                //Hide the crosshair
+                crosshair.enabled = false;
+
+                //Resume time
+                Time.timeScale = 1f;
+
+                //Shoot bombs
+                SpawnBombTrail(dir, bombTrailSpacing, numberOfTrailBombs);
             }
 
             yield return null;
@@ -439,9 +489,3 @@ public class Player : MonoBehaviour
     #endregion
 
 }
-
-
-
-
-
-
