@@ -4418,6 +4418,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7428298229329625348, guid: c0063abd85bf41b4faef95c439286949, type: 3}
+      propertyPath: maxSpeed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7428298229329625348, guid: c0063abd85bf41b4faef95c439286949, type: 3}
       propertyPath: acceleration.m_Curve.Array.size
       value: 2
       objectReference: {fileID: 0}

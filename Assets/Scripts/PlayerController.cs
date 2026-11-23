@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -35,27 +36,18 @@ public class PlayerController : MonoBehaviour
         // The input from the player needs to be determined and
         // then passed in the to the MovementUpdate which should
         // manage the actual movement of the character.
-        if (!isInputing && timeSinceInput >=0)
-        {
-
-            timeSinceInput =- Time.deltaTime;
-
-        }
-        else if (timeSinceInput <= 0.2) {
-
-            timeSinceInput =+ Time.deltaTime;
-
-        }
-        
-
 
         MovementUpdate(velocity);
+        
     }
 
     private void MovementUpdate(Vector2 v)
     {
-        rb.AddForce(v);
 
+       if(isInputing)
+        {
+            rb.linearVelocityX = v.x;
+        }
         
     }
 
@@ -63,6 +55,8 @@ public class PlayerController : MonoBehaviour
     {
         //Take input and store it locally
         Vector2 inputDir = new Vector2 (context.ReadValue<Vector2>().x, 0);
+
+        float v = acceleration.Evaluate(0.2f) * maxSpeed;
 
 
         if (inputDir.x > 0)
@@ -72,20 +66,18 @@ public class PlayerController : MonoBehaviour
         else if (inputDir.x < 0)
         {
             isFacingLeft = true;
+            v = -v;
         }
 
+        velocity.x = v;
 
-        velocity = inputDir * acceleration.Evaluate(0.2f) * maxSpeed;
-
-        if (context.started) {
-
+        if(context.started)
+        {
             isInputing = true;
-
         }
-        else if (context.canceled) { 
-
+        else if(context.canceled)
+        {
             isInputing = false;
-
         }
 
     }
